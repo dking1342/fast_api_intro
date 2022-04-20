@@ -53,4 +53,22 @@ async def create_post(post: Post):
   return post that was saved
 ```
 
+if you want to convert the payload data to a python dictionary then just do post.dict() and then it will be that data type in your function.
+
 ### set up schema or modal for the db and structure of data
+using pydantic you can set up the schema, modal with the types. you can import this package then make the schema
+
+```
+from pydantic import BaseModel
+from typing import Optional
+
+
+class Post(BaseModel):
+    title: str
+    content: str
+    published: bool = True
+    rating: Optional[int] = None
+```
+
+optional fields can be done making a default value as shown with the boolean value. this can be for any other data type as well. the other way to do 
+this is to use the Optional package from typing.
