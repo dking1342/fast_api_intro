@@ -23,6 +23,13 @@ pip install "fastapi[all]"
 
 this will download all the packages you'll need for your project
 
+### start the server
+create a new folder called app and put the main.py file inside. create a __init__.py file. to start the server type the script 
+
+```commandline
+uvicorn app.main:app --reload
+```
+
 ### creating api routes
 in the main.py file you import fastapi and then create a demo route by typing this:
 
@@ -72,3 +79,79 @@ class Post(BaseModel):
 
 optional fields can be done making a default value as shown with the boolean value. this can be for any other data type as well. the other way to do 
 this is to use the Optional package from typing.
+
+### making more robust api endpoints
+now that the schema is made then you can make more robust api endpoints. you can make them based on the format below
+
+```commandline
+@app.get("/posts")
+async def get_posts():
+    return {"detail": my_posts}
+
+
+@app.get("/posts/{post_id}")
+async def get_post(post_id: UUID):
+    payload = find_post(post_id)
+    if payload is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Post not found"
+        )
+    else:
+        return {"detail": payload}
+
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+async def create_post(post: Post):
+    post_dict = post.dict()
+    post_dict["id"] = uuid4()
+    my_posts.append(post_dict)
+    return {"detail": post_dict}
+
+
+@app.put("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def update_post(post: Post, post_id: UUID):
+    response = None
+    for item in my_posts:
+        if item.id == post_id:
+            item.title = post.title
+            item.content = post.content
+            item.rating = post.rating
+            item.published = post.published
+            response = item
+            break
+
+    if response is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+    else:
+        return {"detail": response}
+
+
+@app.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(post_id: UUID):
+    payload = find_post(post_id)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found"
+        )
+    else:
+        my_posts.remove(payload)
+        return {"detail": f"item with id {post_id} has been removed"}
+
+
+def find_post(post_id):
+    payload = None
+    for item in my_posts:
+        if post_id == item.id:
+            payload = item
+            break
+    return payload
+```
+
+you can make default status codes in the decorator. you can create helper functions to help with searching for the post. you can have
+html exceptions to be raised when the desired activity does not happen.
+
+### 
