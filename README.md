@@ -23,6 +23,9 @@ pip install "fastapi[all]"
 
 this will download all the packages you'll need for your project
 
+### create gitignore file
+go to toptal and get a template for python. fastapi was not there at the time of this repo
+
 ### start the server
 create a new folder called app and put the main.py file inside. create a __init__.py file. to start the server type the script 
 
@@ -84,6 +87,8 @@ this is to use the Optional package from typing.
 now that the schema is made then you can make more robust api endpoints. you can make them based on the format below
 
 ```commandline
+import any packages
+
 @app.get("/posts")
 async def get_posts():
     return {"detail": my_posts}
@@ -154,4 +159,13 @@ def find_post(post_id):
 you can make default status codes in the decorator. you can create helper functions to help with searching for the post. you can have
 html exceptions to be raised when the desired activity does not happen.
 
-### 
+
+### setup of environment variables
+go to this site to set up your environment variables: <a href="https://stackoverflow.com/questions/41546883/what-is-the-use-of-python-dotenv">setup</a>
+
+
+### database setup with postgres
+create a database, tables and seed data for posts. the sql scripts can be found in the sql file. Install and employ psycopg to connect the db.
+follow the instructions here to set everything up <a href="https://www.postgresqltutorial.com/postgresql-python/">Python Postgres setup</a>
+
+

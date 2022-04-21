@@ -1,11 +1,14 @@
 from typing import List
 from uuid import UUID, uuid4
-
 from fastapi import FastAPI, HTTPException, status
-
 from app.Post import Post
+from database.get_post import get_post
+from database.get_posts import get_posts
+from database.insert_post import insert_post
+
 
 app = FastAPI()
+
 
 # short term db
 my_posts: List[Post] = [
@@ -27,29 +30,41 @@ async def root():
     return {"detail": "Hello World"}
 
 
-@app.get("/posts")
-async def get_posts():
-    return {"detail": my_posts}
+@app.get("/posts", status_code=status.HTTP_200_OK)
+async def fetch_posts():
+    payload = await get_posts()
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No posts retrieved"
+        )
+    else:
+        return {"detail": payload}
 
 
-@app.get("/posts/{post_id}")
-async def get_post(post_id: UUID):
-    payload = find_post(post_id)
-    if payload["data"] is None:
+@app.get("/posts/{post_id}", status_code=status.HTTP_200_OK)
+async def fetch_post(post_id: UUID):
+    payload = await get_post(post_id)
+    if payload is None:
         raise HTTPException(
             status_code=404,
             detail="Post not found"
         )
     else:
-        return {"detail": payload["data"]}
+        return {"detail": payload}
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-async def create_post(post: Post):
-    post_dict = post.dict()
-    post_dict["id"] = uuid4()
-    my_posts.append(post_dict)
-    return {"detail": post_dict}
+async def create_post(user_post: Post):
+    post_dict = user_post.dict()
+    payload = await insert_post(post_dict)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Unable to create the post"
+        )
+    else:
+        return {"detail": payload}
 
 
 @app.put("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
