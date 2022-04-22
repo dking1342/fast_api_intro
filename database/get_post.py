@@ -8,7 +8,7 @@ load_dotenv()
 psycopg2.extras.register_uuid()
 
 
-def get_post(post_id: UUID):
+async def get_post(post_id: UUID):
     """ get all posts from the posts table """
     sql = """SELECT * FROM posts WHERE post_id=%s;"""
     conn = None

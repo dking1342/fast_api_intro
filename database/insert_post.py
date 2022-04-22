@@ -1,11 +1,12 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
+from app import Post
 
 load_dotenv()
 
 
-def insert_post(post):
+async def insert_post(post: Post):
     """ insert a new post into the posts table """
     sql = f"""INSERT INTO posts(title,content)
              VALUES(%s,%s) RETURNING *;"""

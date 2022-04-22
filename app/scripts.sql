@@ -1,5 +1,5 @@
 --create database
-CREATE DATABASE
+CREATE DATABASE;
 
 --grant access and privileges
 GRANT ALL PRIVILEGES ON DATABASE fastapitest TO davidking;
@@ -23,3 +23,14 @@ VALUES
 ('SPY up today','Netflix a big loser on an up day from the SPY'),
 ('QQQ plunges','Tech stocks plunge on higher interest rates'),
 ('IWM flat','Small cap stocks unchanged as dollar continues its rise');
+
+--update a post
+UPDATE posts
+SET title = %s, content = %s, published = %s, rating = %s
+WHERE post_id = %s
+RETURNING *;
+
+--delete a post
+DELETE FROM posts
+WHERE post_id = %s
+RETURNING *;
