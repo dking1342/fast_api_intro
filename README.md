@@ -179,5 +179,8 @@ of this repo is sqlalchemy. The setup can be found here: <a href="https://fastap
 psycopg2 package.
 </p>
 
-### 
+### folder structure
+the setup of the database will go into the database.py file. the endpoints will go in the main.py file. the models that 
+sqlalchemy uses to connect to the database will go in the models.py file. the schema or shape of the data will go in the 
+schema.py file. any logic you want to put into another file for the endpoints will go in the crud.py file.
 
