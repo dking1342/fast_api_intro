@@ -1,13 +1,22 @@
-import random
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel
-from typing import Optional
 
 
-class Blog(BaseModel):
-    blog_id: Optional[int] = random.randrange(1000)
+class BlogBase(BaseModel):
     title: str
     content: str
     published: bool = True
-    created_at: datetime
+
+
+class BlogCreate(BlogBase):
+    pass
+
+
+class BlogResponse(BaseModel):
+    timestamp: datetime = datetime.now()
+    status: str
+    message: str
+    data: List[BlogBase] = []
+    count: int = 0
