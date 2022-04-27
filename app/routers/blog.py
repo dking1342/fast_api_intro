@@ -4,6 +4,7 @@ from fastapi import Depends, status, APIRouter
 from sqlalchemy.orm import Session
 from .. import models
 from ..schemas import blog as blog_schema
+from ..schemas import user as user_schema
 from ..database import get_db
 from ..utils import authentication
 
@@ -36,7 +37,7 @@ async def get_blogs(db: Session = Depends(get_db)):
 async def get_blog(
         blog_id: Union[int, str, UUID],
         db: Session = Depends(get_db),
-        user_id: Union[int, str, UUID] = Depends(authentication.get_current_user)
+        current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
 ):
     payload = db.query(models.Blog).filter(models.Blog.blog_id == blog_id).first()
     if payload is None:
@@ -59,7 +60,7 @@ async def get_blog(
 async def create_blog(
         blog: blog_schema.BlogCreate,
         db: Session = Depends(get_db),
-        user_id: Union[int, str, UUID] = Depends(authentication.get_current_user)
+        current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
 ):
     payload = models.Blog(**blog.dict())
     if payload is None:
@@ -86,7 +87,7 @@ async def update_blog(
         blog_id: Union[int, str, UUID],
         blog: blog_schema.BlogCreate,
         db: Session = Depends(get_db),
-        user_id: Union[int, str, UUID] = Depends(authentication.get_current_user)
+        current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
 ):
     payload = db.query(models.Blog).filter(models.Blog.blog_id == blog_id)
     if payload.first() is None:
@@ -113,7 +114,7 @@ async def update_blog(
 async def delete_blog(
         blog_id: Union[int, str, UUID],
         db: Session = Depends(get_db),
-        user_id: Union[int, str, UUID] = Depends(authentication.get_current_user)
+        current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
 ):
     payload = db.query(models.Blog).filter(models.Blog.blog_id == blog_id)
     if payload.first() is None:

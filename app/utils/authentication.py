@@ -1,6 +1,9 @@
 from jose import JWTError, jwt
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from .. import database, models
+from ..schemas import user as user_schmea
 from ..schemas import auth as auth_schema
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -18,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 secret_key = os.environ.get("SECRET_KEY")
 algorithm = os.environ.get("JWT_ALGO")
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 def create_access_token(data: dict):
@@ -35,23 +38,22 @@ def verify_access_token(token: str, credential_exception):
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         user_id: str = payload.get("user_id")
         if user_id is None:
-            return credential_exception
+            raise credential_exception
         token_data = auth_schema.TokenData(user_id=user_id)
         return token_data
 
     except JWTError:
-        return credential_exception
+        raise credential_exception
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    response = auth_schema.AuthErrorResponse(
-        status=status.HTTP_401_UNAUTHORIZED,
-        error="Could not validate credentials"
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
+    credential_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
     )
-    # credential_exception = HTTPException(
-    #     status_code=status.HTTP_401_UNAUTHORIZED,
-    #     detail=f"Could not validate credentials",
-    #     headers={"WWW-Authenticate": "Bearer"}
-    # )
-    return verify_access_token(token, response)
+
+    verified_token = verify_access_token(token, credential_exception)
+    user: user_schmea.UserCreate = db.query(models.User).filter(models.User.user_id == verified_token.user_id).first()
+    return user
 

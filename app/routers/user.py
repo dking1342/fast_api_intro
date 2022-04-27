@@ -1,3 +1,4 @@
+import uuid
 from typing import Union
 from uuid import UUID
 from fastapi import Depends, status, APIRouter
@@ -74,55 +75,55 @@ async def create_user(
         db.refresh(payload)
         response = user_schema.UserResponse(
             status=status.HTTP_201_CREATED,
-            message=f"blog with id of {payload.user_id} created successfully"
+            message=f"user with id of {payload.user_id} created successfully"
         )
         response.data.append(payload)
         response.count = len(response.data)
         return response
 
 
-@router.put("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
-async def update_user(
-        user: user_schema.UserBase,
-        user_id: Union[int, str, UUID],
-        db: Session = Depends(get_db)
-):
-    payload = db.query(models.User).filter(models.User.user_id == user_id)
-    if payload.first() is None:
-        response = user_schema.UserResponse(
-            status=status.HTTP_404_NOT_FOUND,
-            message="Unable to update the user"
-        )
-        return response
-    else:
-        payload.update(user.dict(), synchronize_session=False)
-        db.commit()
-        response = user_schema.UserResponse(
-            status=status.HTTP_200_OK,
-            message=f"user with id of {user_id} updated successfully"
-        )
-        response.data.append(payload.first())
-        response.count = len(response.data)
-        return response
+# @router.put("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
+# async def update_user(
+#         user: user_schema.UserBase,
+#         user_id: Union[int, str, UUID],
+#         db: Session = Depends(get_db)
+# ):
+#     payload = db.query(models.User).filter(models.User.user_id == user_id)
+#     if payload.first() is None:
+#         response = user_schema.UserResponse(
+#             status=status.HTTP_404_NOT_FOUND,
+#             message="Unable to update the user"
+#         )
+#         return response
+#     else:
+#         payload.update(user.dict(), synchronize_session=False)
+#         db.commit()
+#         response = user_schema.UserResponse(
+#             status=status.HTTP_200_OK,
+#             message=f"user with id of {user_id} updated successfully"
+#         )
+#         response.data.append(payload.first())
+#         response.count = len(response.data)
+#         return response
 
 
-@router.delete("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
-async def delete_user(
-        user_id: Union[int, str, UUID],
-        db: Session = Depends(get_db)
-):
-    payload = db.query(models.User).filter(models.User.user_id == user_id)
-    if payload.first() is None:
-        response = user_schema.UserResponse(
-            status=status.HTTP_404_NOT_FOUND,
-            message="Unable to delete the user"
-        )
-        return response
-    else:
-        payload.delete(synchronize_session=False)
-        db.commit()
-        response = user_schema.UserResponse(
-            status=status.HTTP_200_OK,
-            message=f"user with id of {user_id} was deleted successfully"
-        )
-        return response
+# @router.delete("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
+# async def delete_user(
+#         user_id: Union[int, str, UUID],
+#         db: Session = Depends(get_db)
+# ):
+#     payload = db.query(models.User).filter(models.User.user_id == user_id)
+#     if payload.first() is None:
+#         response = user_schema.UserResponse(
+#             status=status.HTTP_404_NOT_FOUND,
+#             message="Unable to delete the user"
+#         )
+#         return response
+#     else:
+#         payload.delete(synchronize_session=False)
+#         db.commit()
+#         response = user_schema.UserResponse(
+#             status=status.HTTP_200_OK,
+#             message=f"user with id of {user_id} was deleted successfully"
+#         )
+#         return response

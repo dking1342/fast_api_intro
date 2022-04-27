@@ -1,11 +1,10 @@
-from uuid import UUID
 from datetime import datetime
-from typing import List, Union, Optional
-from pydantic import BaseModel, EmailStr
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, UUID4
 
 
 class UserBase(BaseModel):
-    user_id: Optional[Union[int, str, UUID]]
+    user_id: Optional[UUID4]
     email: EmailStr
     password: str
     created_at: datetime = datetime.utcnow()
@@ -15,7 +14,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(BaseModel):
-    user_id: Optional[Union[int, str, UUID]]
+    user_id: UUID4
     email: EmailStr
     created_at: datetime
 

@@ -1,7 +1,6 @@
-from uuid import UUID
 from datetime import datetime
-from typing import List, Union
-from pydantic import BaseModel, EmailStr
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, UUID4
 
 
 class UserLogin(BaseModel):
@@ -18,11 +17,11 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: Union[int, str, UUID] = None
+    user_id: Optional[UUID4] = None
 
 
 class UserLoginCreate(BaseModel):
-    user_id: Union[int, str, UUID] = None
+    user_id: str
     token: str
 
     class Config:

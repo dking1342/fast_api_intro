@@ -1,12 +1,10 @@
-import uuid
-from uuid import UUID
 from datetime import datetime
-from typing import List, Union, Optional
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, UUID4
 
 
 class BlogBase(BaseModel):
-    blog_id: Optional[Union[int, str, UUID]]
+    blog_id: Optional[UUID4]
     title: str
     content: str
     published: bool = True
