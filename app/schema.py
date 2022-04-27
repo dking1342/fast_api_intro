@@ -1,8 +1,7 @@
 from datetime import datetime
 from random import randrange
 from typing import List
-
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class BlogBase(BaseModel):
@@ -30,9 +29,9 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     user_id: int
-    email: str
+    email: EmailStr
     created_at: datetime
 
     class Config:

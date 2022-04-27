@@ -1,4 +1,4 @@
-from . import models, schema
+from . import models, schema, utils
 from sqlalchemy.orm import Session
 from fastapi import Depends, status
 from .database import get_db
@@ -140,6 +140,8 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 async def create_user(user: schema.UserBase, db: Session = Depends(get_db)):
+    hashed_pw = utils.hash(user.password)
+    user.password = hashed_pw
     payload = models.User(**user.dict())
     if payload is None:
         response = schema.UserResponse(
@@ -148,6 +150,7 @@ async def create_user(user: schema.UserBase, db: Session = Depends(get_db)):
         )
         return response
     else:
+
         db.add(payload)
         db.commit()
         db.refresh(payload)
