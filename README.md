@@ -180,7 +180,118 @@ psycopg2 package.
 </p>
 
 ### folder structure
+<p>
 the setup of the database will go into the database.py file. the endpoints will go in the main.py file. the models that 
 sqlalchemy uses to connect to the database will go in the models.py file. the schema or shape of the data will go in the 
 schema.py file. any logic you want to put into another file for the endpoints will go in the crud.py file.
+</p>
+
+<p>
+If you don't want to use the crud file and want to use routers instead then create a subfolder named routers. Inside the 
+routers folder add a file for each category of api endpoint. In each file you will need to import the necessary packages 
+and also import the APIRouter package from fastapi. 
+</p>
+
+<p>
+to complete the routers setup you will need to add the following in the main.py file:
+
+```commandline
+# routers
+app.include_router(blog.router)
+app.include_router(user.router)
+```
+
+then in the respective file in the routers folder you will need to add the following:
+
+```commandline
+router = APIRouter()
+
+or 
+
+# this is if you want to add a prefix if the route has repeated subpaths
+router = APIRouter(
+    prefix="/users",
+    tags=['Users'] # this will organize the swaggerUI in docs for better readability
+)
+```
+
+after that change the decorator so that it says router instead of app
+</p>
+
+### authentication
+the fastapi has a good documentation for authentication <a href="https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/?h=oau">found here</a>
+
+### using postman
+when using postman it can be very helpful to set up environment variables. this is especially helpful when you are authenticating 
+users and have tokens to verify a user in other paths. go the side tab where it says environment variables and create a new one. 
+then in the main area type in the name of the variables that you want. in the case of the token then make a name for that variable. 
+you can type in the initial and current value the first time. to have this be dynamic then go to the login or register path. in 
+the test subtab you will need to set the variable based on the response object. if you have done thing properly then the response 
+for the login path should include a token. you can type in the following code to automatically update it for each login or register:
+
+```commandline
+var jsonData = pm.response.json()
+pm.environment.set("token", jsonData.data[0].token);
+```
+
+the shape of the response will depend on your schema. you will need to make sure that the json object is pointing to the correct 
+property and value within your response object. 
+
+### relational database relations
+in order to create a relationship between tables in your relational database you will need to adjust the tables accordingly. the 
+sqlalchemy has documentation on how to do it <a href="https://docs.sqlalchemy.org/en/14/orm/relationships.html">here</a>. you 
+can select the type of relationship you want and read the documentation. for a glimpse of how it would look in this project it 
+would look like this:
+
+```commandline
+class Blog(Base):
+    __tablename__ = "blogs"
+    blog_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    published = Column(Boolean, server_default='TRUE', nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+
+
+class User(Base):
+    __tablename__ = "users"
+    user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+```
+
+the user_id column in the blogs table will connect to the users table. it is a one to many relation because one user can have 
+many blogs. you can also add another line to each table that has a relationship in order to make it bidirectional. the response 
+was tricky as i was not able to get the schema to work properly and had to make a helper function to choose what shape the 
+response data had.
+
+
+### search parameters
+you can add query parameters to the path which can help in querying the database. in order to do this you just need to 
+add each parameter to the path function. you can add defaults in case the search parameter is not mentioned in the url. then
+in the path function you can use those parameters in the query to the database.
+
+```commandline
+@router.get("", status_code=status.HTTP_200_OK)
+async def get_blogs(
+        db: Session = Depends(get_db),
+        limit: int = 10,
+        skip: int = 0,
+        search: Optional[str] = "",
+        # current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
+):
+    payload = db.query(models.Blog)\
+        .filter(models.Blog.title.contains(search))\
+        .order_by(models.Blog.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+```
+
+the query can be chained for all the different parameters that you want to use. if the parameter is a string and has a space 
+or whitespace separating the string then you can use <code>%20</code> as a space that will be recognized accordingly.
+
+
 

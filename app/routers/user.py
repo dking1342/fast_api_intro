@@ -107,23 +107,23 @@ async def create_user(
 #         return response
 
 
-# @router.delete("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
-# async def delete_user(
-#         user_id: Union[int, str, UUID],
-#         db: Session = Depends(get_db)
-# ):
-#     payload = db.query(models.User).filter(models.User.user_id == user_id)
-#     if payload.first() is None:
-#         response = user_schema.UserResponse(
-#             status=status.HTTP_404_NOT_FOUND,
-#             message="Unable to delete the user"
-#         )
-#         return response
-#     else:
-#         payload.delete(synchronize_session=False)
-#         db.commit()
-#         response = user_schema.UserResponse(
-#             status=status.HTTP_200_OK,
-#             message=f"user with id of {user_id} was deleted successfully"
-#         )
-#         return response
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK, response_model=user_schema.UserResponse)
+async def delete_user(
+        user_id: Union[int, str, UUID],
+        db: Session = Depends(get_db)
+):
+    payload = db.query(models.User).filter(models.User.user_id == user_id)
+    if payload.first() is None:
+        response = user_schema.UserResponse(
+            status=status.HTTP_404_NOT_FOUND,
+            message="Unable to delete the user"
+        )
+        return response
+    else:
+        payload.delete(synchronize_session=False)
+        db.commit()
+        response = user_schema.UserResponse(
+            status=status.HTTP_200_OK,
+            message=f"user with id of {user_id} was deleted successfully"
+        )
+        return response
