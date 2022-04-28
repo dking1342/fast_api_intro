@@ -1,4 +1,3 @@
-import uuid
 from typing import Union
 from uuid import UUID
 from fastapi import Depends, status, APIRouter

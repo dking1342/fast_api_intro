@@ -293,5 +293,9 @@ async def get_blogs(
 the query can be chained for all the different parameters that you want to use. if the parameter is a string and has a space 
 or whitespace separating the string then you can use <code>%20</code> as a space that will be recognized accordingly.
 
+### environment variables
+if you want to use environment variables using the fastapi tools then <a href="https://fastapi.tiangolo.com/advanced/settings/">read here</a> 
+to see how that can be set up.
+
 
 

@@ -1,15 +1,7 @@
 from datetime import datetime
-from typing import List, Optional, Any
+from typing import List
 from pydantic import BaseModel, UUID4
-from pydantic.networks import EmailStr
-
-
-class UserOutput(BaseModel):
-    user_id: UUID4
-    email: EmailStr
-
-    class Config:
-        orm_mode = True
+from ..schemas import user as user_schema
 
 
 class BlogBase(BaseModel):
@@ -33,7 +25,7 @@ class Blog(BlogBase):
 class BlogOutput(BlogBase):
     blog_id: UUID4
     user_id: UUID4
-    owner: UserOutput
+    owner: user_schema.UserBase
 
     class Config:
         orm_mode = True

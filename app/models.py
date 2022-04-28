@@ -25,3 +25,9 @@ class User(Base):
     password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     blog = relationship("Blog", back_populates="owner", lazy="joined")
+
+
+class Vote(Base):
+    __tablename__ = "votes"
+    blog_id = Column(UUID(as_uuid=True), ForeignKey("blogs.blog_id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="CASCADE"), primary_key=True)
