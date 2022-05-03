@@ -29,6 +29,14 @@ async def create_votes(
         db: Session = Depends(get_db),
         current_user: user_schema.UserCreate = Depends(authentication.get_current_user)
 ):
+    blog = db.query(models.Blog).filter(models.Blog.blog_id == vote.blog_id).first()
+    if not blog:
+        response = vote_schema.VoteErrorResponse(
+            status=status.HTTP_404_NOT_FOUND,
+            error="blog does not exist"
+        )
+        return response
+
     vote_query = db.query(models.Vote).filter(models.Vote.blog_id == vote.blog_id, models.Vote.user_id == current_user.user_id)
     found_vote = vote_query.first()
     if vote.direction == 1:

@@ -13,6 +13,13 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
+class UserOutput(BaseModel):
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+
 class UserCreate(BaseModel):
     user_id: UUID4
     email: EmailStr

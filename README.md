@@ -297,5 +297,63 @@ or whitespace separating the string then you can use <code>%20</code> as a space
 if you want to use environment variables using the fastapi tools then <a href="https://fastapi.tiangolo.com/advanced/settings/">read here</a> 
 to see how that can be set up.
 
+### sql join queries and translating that to sqlalchemy
+see the utils file named queries to see the sql queries that use raw sql. these queries look to join different tables in 
+order to retrieve data useful to the client. the main query that joins tables is the query that joins the blogs and votes 
+to find how many likes or votes each blog has. the sqlalchemy equivalent can be found in the blogs and votes routers. you 
+can also check out the documentation with sqlalchemy to learn more about joining tables in this syntax.
 
+### alembic 
+<p>
+use a tool called alembic to make changes to the database. it can automatically pull database models from sqlalchemy and generate 
+the proper tables. to use it you will need to install alembic and go through the documentation <a href="https://alembic.sqlalchemy.org/en/latest/">here</a>.
+</p>
+<p>
+first do a pip install of alembic by running <code>pip install alembic</code>. make sure you are in the root folder before doing this 
+so that it is outside the app folder. then initialize alembic by writing this <code>alembic init alembic</code> in the terminal. the last 
+word in this command is the folder name so that can be whatever you want. go to the .env file in the alembic folder and import 
+Base from the database file like this <code>from app.models import Base</code>. go to the metadata target and do this: 
+<code>target_metadata = Base.metadata</code> then go to the alembic.ini file that is in the root directory. you will need to find 
+the url for the database connection. enter the required data in <code>sqlalchemy.url = postgresql://user:pass@localhost/dbname</code>. this 
+is the same as the other database connection using the environment variables. if you don't want to do this in the ini file 
+then go back to the .env file and underneath the config variable type with your credentials
+
+```commandline
+config.set_main_option("sqlalchemy.url", 'postgresql://user:pass@localhost/dbname')
+```
+
+then you can use the environment variables already made to insert into this settings for the config. you can use the pydantic settings 
+process or the dotenv process. this is similar to when we set up the database config.
+</p>
+
+### alembic functionality
+you can access the commands from alembic by going in the terminal and typing alembic --help. 
+
+#### revision
+to revise any model you can use the revision command and you can use a flag to insert a message that will connect to the revision. 
+it would look like this
+
+```commandline
+alembic revision -m "create blogs table"
+```
+
+after this is successful then you can look at the subfolder called versions to see the migrations. you can go the the file 
+that was just created to put in the code. this is done in the upgrade function. the documentation for this can be found in the
+ previous link.
+
+#### commands
+to create the first migration you can use the alembic revision -m "message here" then the file will show in the versions folder. 
+go to the file and make the necessary adjustments in upgrade and downgrade. go back to the terminal and we can either do one 
+of two commands. the first is <code>alembic upgrade <revision number></code> or you can type <code>alembic upgrade head</code>. if you 
+need to downgrade you can do it one of two ways. first you can type <code>alembic downgrade <revision number></code> or you 
+can type <code>alembic downgrade -1</code> the -1 can be replaced but it represents how many revisions backwards do you want 
+to go. -1 means you will go back one revision. each subsequent number would be an additional downgrade further back. to see which 
+revision you are on you can see the current revision <code>alembic current</code> or if you want to see the entire history then 
+you can type <code>alembic history</code>
+
+#### alembic guide for writing upgrades/downgrades
+the documentation for how to write the upgrades and downgrades in the versions or migration it can be found 
+<a href="https://alembic.sqlalchemy.org/en/latest/api/ddl.html">here</a>
+
+ 
 

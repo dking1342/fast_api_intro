@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel, UUID4, EmailStr
 from ..schemas import user as user_schema
 
 
@@ -16,7 +16,11 @@ class BlogCreate(BlogBase):
 
 
 class Blog(BlogBase):
-    pass
+    blog_id: UUID4
+    created_at: datetime
+    user_id: UUID4
+    votes: int
+    owner: user_schema.UserOutput
 
     class Config:
         orm_mode = True
@@ -24,8 +28,10 @@ class Blog(BlogBase):
 
 class BlogOutput(BlogBase):
     blog_id: UUID4
+    created_at: datetime
     user_id: UUID4
-    owner: user_schema.UserBase
+    votes: int
+    owner: user_schema.UserOutput
 
     class Config:
         orm_mode = True
