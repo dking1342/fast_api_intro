@@ -65,6 +65,9 @@ async def create_post(post: Post):
 
 if you want to convert the payload data to a python dictionary then just do post.dict() and then it will be that data type in your function.
 
+### cors setup
+you can see the documentation for setting up cors in the fastapi website <a href="https://fastapi.tiangolo.com/tutorial/cors/">here</a>
+
 ### set up schema or modal for the db and structure of data
 using pydantic you can set up the schema, modal with the types. you can import this package then make the schema
 
@@ -350,6 +353,11 @@ can type <code>alembic downgrade -1</code> the -1 can be replaced but it represe
 to go. -1 means you will go back one revision. each subsequent number would be an additional downgrade further back. to see which 
 revision you are on you can see the current revision <code>alembic current</code> or if you want to see the entire history then 
 you can type <code>alembic history</code>
+
+#### autogenerate
+autogenerate means that alembic looks at your models file and it auto generates a revision to match whatever is in that file. 
+to make that migration you will type in the terminal <code>alembic revision --autogenerate -m "message here"</code>. this will 
+run the migration and set you up nicely. then you can type <code>alembic upgrade head</code> for those changes to take place.
 
 #### alembic guide for writing upgrades/downgrades
 the documentation for how to write the upgrades and downgrades in the versions or migration it can be found 
